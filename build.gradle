@@ -1,0 +1,145 @@
+// 老版本需要先在buildscript中声明，然后使用apply plugin以应用。
+// 新版本可直接用plugins（但使用的plugin必须存在于Gradle plugin repository，即新版本spring-boot-gradle-plugin被放入了Gradle plugin repository）
+buildscript {
+    ext {
+        springBootVersion = '2.3.10.RELEASE'
+    }
+    //配置仓库
+    repositories {
+        mavenLocal()
+        maven {
+            url 'https://maven.aliyun.com/repository/public/'
+        }
+        maven {
+            url 'https://maven.aliyun.com/repository/spring/'
+        }
+        mavenCentral()
+    }
+    dependencies {
+        // springBoot的依赖管理
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+// plugins不能在allprojects中使用，allprojects中只能使用apply plugin方式
+/*plugins {
+    id 'java'
+    id 'idea'
+    // 使用spring boot
+    id 'org.springframework.boot' version "${springBootVersion}"
+    // 使用spring boot的自动依赖管理
+    id 'io.spring.dependency-management' version "${dependencyManagementPluginVersion}"
+
+}*/
+configure(allprojects) { project ->
+    apply plugin: 'idea'
+    apply plugin: 'java'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+    //指定编译版本
+    sourceCompatibility = 11
+    targetCompatibility = 11
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+    }
+    // 指定编码格式
+    [compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
+    //配置项目信息
+    group 'com.atguigu'
+    version '1.0-SNAPSHOT'
+    //引入任务脚本
+    ext.gradleScriptDir = "${rootProject.projectDir}"
+    apply from: "${gradleScriptDir}/task.gradle"
+}
+
+// 容器模块
+def holderProjects = Arrays.asList('cloud', 'commons', 'service')
+
+configure(subprojects) { subproject ->
+    //此处主要为了过滤容器模块中的插件配置，容器模块的主要用来管理下属部分的模块，无需添加依赖和插件
+    if (!holderProjects.contains(subproject.name)) {
+        //指定语言
+//    apply plugin: 'java'
+        //配置仓库
+        repositories {
+            mavenLocal()
+            maven {
+                url 'https://maven.aliyun.com/repository/public/'
+            }
+            maven {
+                url 'https://maven.aliyun.com/repository/spring/'
+            }
+            mavenCentral()
+        }
+        //配置全局依赖版本信息
+        ext {
+            junitVersion = '5.7.0'
+            mysqlConnectorVersion = "8.0.22"
+            mybatisStarterVersion = "2.1.4"
+            fastjsonVersion = "1.2.76"
+            commonsLang3Version = "3.12.0"
+            springCloudVersion = 'Hoxton.SR11'
+            hutoolVersion = '5.6.5'
+            caffeineVersion = '3.0.2'
+        }
+
+        //配置子模块依赖
+        dependencies {
+            implementation "org.springframework.boot:spring-boot-starter"
+            developmentOnly "org.springframework.boot:spring-boot-devtools"
+            // 从properties文件获取配置
+//            annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+            testImplementation "org.springframework.boot:spring-boot-starter-test"
+            implementation 'org.projectlombok:lombok'
+            annotationProcessor 'org.projectlombok:lombok'
+            implementation 'org.springframework.boot:spring-boot-starter-actuator'
+            implementation "cn.hutool:hutool-all:${hutoolVersion}"
+            // 替换loadBalance默认的内存缓存框架
+            implementation "com.github.ben-manes.caffeine:caffeine:${caffeineVersion}"
+        }
+
+        //配置子模块可选依赖
+        dependencyManagement {
+            imports {
+                // springCloud的依赖管理
+                mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+            }
+            dependencies {
+                // lombok
+//            dependency "org.projectlombok:lombok:${lombokVersion}"
+                // Mybatis
+//            dependency "org.mybatis.spring.boot:mybatis-spring-boot-starter:${mybatisStarterVersion}"
+                // Log4j2
+//            dependency "org.springframework.boot:spring-boot-starter-log4j2:${springBootVersion}"
+                // JDBC Driver
+                dependency "mysql:mysql-connector-java:${mysqlConnectorVersion}"
+                // JSON
+                dependency "com.alibaba:fastjson:${fastjsonVersion}"
+                // Apache Commons
+                dependency "org.apache.commons:commons-lang3:${commonsLang3Version}"
+                // eureka
+                /*dependencySet(group: 'org.springframework.cloud', version: "${eurekaVersion}") {
+                    entry 'spring-cloud-starter-netflix-eureka-server'
+                    entry 'spring-cloud-starter-netflix-eureka-client'
+                }*/
+                //排除依赖
+                /*dependency('org.springframework:spring-core:4.0.3.RELEASE') {
+                    exclude 'commons-logging:commons-logging'
+                }*/
+                //配置依赖集（排除指定依赖）
+                /*dependencySet(group:'org.springframework', version: '4.1.4.RELEASE') {
+                    entry('spring-core') {
+                        exclude group: 'commons-logging', name: 'commons-logging'
+                    }
+                }*/
+            }
+        }
+        test {
+            useJUnitPlatform()
+        }
+    }
+}
+
+configurations {
+    //移除spring boot 默认logger依赖
+    all*.exclude module: 'spring-boot-starter-logging'
+}

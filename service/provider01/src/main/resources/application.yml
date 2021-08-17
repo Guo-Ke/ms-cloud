@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: provider
+  cloud:
+    loadbalancer:
+      ribbon:
+        enabled: false
+  devtools:
+    add-properties: true
+
+server:
+  servlet:
+    context-path: /provider
+  port: 18101
+
+sgd:
+  eureka:
+    auth:
+      u: admin
+      p: admin
+
+eureka:
+  instance:
+    hostname: provider01
+    # 实例名默认为 hostname:serviceName
+    instance-id: provider18101
+    prefer-ip-address: true
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://${sgd.eureka.auth.u}:${sgd.eureka.auth.p}@eureka01:18001/eureka/

@@ -1,0 +1,47 @@
+spring:
+  application:
+    name: consumer
+  cloud:
+    loadbalancer:
+      ribbon:
+        enabled: false
+  devtools:
+    add-properties: true
+
+server:
+  servlet:
+    context-path: /consumer
+  port: 18201
+
+sgd:
+  eureka:
+    auth:
+      u: admin
+      p: admin
+
+eureka:
+  instance:
+    hostname: consumer01
+    # 实例名默认为 hostname:serviceName
+    instance-id: consumer18201
+    prefer-ip-address: true
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://${sgd.eureka.auth.u}:${sgd.eureka.auth.p}@eureka01:18001/eureka/
+
+feign:
+  client:
+    config:
+      default:
+        connect-timeout: 1000
+        read-timeout: 100000
+
+logging:
+  level:
+    com:
+      atguigu:
+        consumer:
+          sao:
+            UserSao: debug

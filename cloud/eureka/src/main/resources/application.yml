@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: eureka
+  cloud:
+    loadbalancer:
+      ribbon:
+        enabled: false
+  devtools:
+    add-properties: true
+
+server:
+  port: 18001
+
+sgd:
+  eureka:
+    auth:
+      u: admin
+      p: admin
+
+eureka:
+  instance:
+    hostname: eureka01
+    # 当prefer-ip-address为true时，实例名默认为ip:port；当prefer-ip-address为false时，实例名默认为 hostname
+    instance-id: eureka18001
+  #    默认为false，表示以hostname的方式注册到eureka。
+  #    若涉及到跨域导致hostname无法解析等问题，可设置为true，自动获取ip地址，然后以ip的方式注册。
+#    prefer-ip-address: true
+  #    若涉及多网卡、云服务器等问题，可指定注册到eureka中的ip
+#    ip-address: 192.168.1.236
+  server:
+    # 自我保护机制开关。默认开启，表示若服务出现心跳丢失，eureka不会立即将其从注册列表剔除
+    enable-self-preservation: false
+    eviction-interval-timer-in-ms: 30000
+    peer-node-read-timeout-ms: 1000
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+    service-url:
+      defaultZone: http://${sgd.eureka.auth.u}:${sgd.eureka.auth.p}@eureka01:18001/eureka/
+  dashboard:
+    #是否启用eureka web界面。默认true
+    enabled: true

@@ -1,0 +1,144 @@
+spring:
+  application:
+    name: consumer
+  cloud:
+    loadbalancer:
+      ribbon:
+        enabled: true
+  devtools:
+    add-properties: true
+
+server:
+  servlet:
+    context-path: /consumer
+
+sgd:
+  eureka:
+    auth:
+      u: admin
+      p: admin
+
+eureka:
+#  instance:
+#    prefer-ip-address: true
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://${sgd.eureka.auth.u}:${sgd.eureka.auth.p}@eureka01:18001/eureka/
+
+feign:
+  client:
+    config:
+      # 服务提供者。default表示所有
+      default:
+        # feign 超时设置。
+        # 若同时设置了ribbon超时时间，feign优先级更高。
+        connect-timeout: 1000
+        # 若同时设置了hystrix超时时间，以时间小的为准
+        read-timeout: 5000
+  hystrix:
+    # 开启熔断降级。默认false
+    enabled: true
+
+# 修改特定服务 provider 的负载均衡策略
+provider:
+  ribbon:
+    NFLoadBalancerRuleClassName: com.atguigu.ribbon.rule.MyRoundRobinRule
+
+# 打印feign日志(日志没参考价值)
+logging:
+  level:
+    com:
+      atguigu:
+        consumer:
+          sao:
+            UserSao: info
+
+hystrix:
+  command:
+    # default表示全局设置
+    default:
+      fallback:
+        # 熔断时是否执行回调方法。默认true
+        enable: true
+#        isolation:
+#          semapore:
+#            # 回调方法的信号池大小（允许回调方法执行的最大并发数）。默认10
+#            maxConcurrentRequests: 10
+      requestCache:
+        # 开启请求缓存。默认true。缓存的生命周期为一个请求内
+        enabled: true
+      metrics:
+        rollingStats:
+          # 滚动统计的时间窗。默认10s
+          timeinMilliseconds: 10000
+      circuitBreaker:
+        # 是否开启断路器。默认true
+        enable: true
+        # 请求总数阈值。默认20次。即，在滚动时间窗内，若请求不超过20次，即使请求失败也不会开启断路器
+        requestVolumeThreshold: 10
+        # 失败率阈值。默认50。即，当在滚动时间窗内超过了请求总数阈值，若失败数超过了请求总数的50%，则开启断路。
+        errorThresholdPercentage: 60
+        # 断路器被打开后的休眠时间。默认10s。休眠期过后，断路器进入半开启状态，即允许一个请求尝试访问，若成功则断路器关闭，若失败在时间重置
+        sleepWindowInMilliseconds: 10000
+      execution:
+        timeout:
+          # 是否开启超时熔断。默认true。若关闭，则只在服务不可用时熔断
+          enable: true
+        isolation:
+          # 隔离策略。thread表示线程池隔离（并发请求数受限于线程池大小），semaphore表示信号池隔离
+          thread:
+            # 使用降级的超时时间。默认1000ms
+            timeoutInMilliseconds: 4500
+            # 当请求超时时，是否中断正在执行的程序。默认true
+            interruptOnTimeout: true
+            # 当请求取消时，是否中断正在执行的程序。默认true
+            interruptOnCancel: true
+#          semapore:
+#            # 信号池大小（最大并发量）。默认10
+#            maxConcurrentRequests: 10
+    # HystrixCommonKey。若HystrixCommonKey未指定，默认为：feign类名#方法名(参数类型1,参数类型2...)。局部设置，优先级高于全局设置
+    UserSao#getTimeout():
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 3500
+
+# actuator 的端点开放
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+
+---
+spring:
+  profiles: aaa
+
+server:
+  port: 18201
+
+eureka:
+  instance:
+    # hostname不能一样
+    hostname: consumer01
+    # 实例名默认为 hostname:serviceName
+    instance-id: consumer18201
+
+---
+spring:
+  profiles: bbb
+
+server:
+  port: 18202
+
+eureka:
+  instance:
+    # hostname不能一样
+    hostname: consumer02
+    # 实例名默认为 hostname
+    instance-id: consumer18202

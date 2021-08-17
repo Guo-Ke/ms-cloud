@@ -1,0 +1,85 @@
+spring:
+  application:
+    name: gateway
+  cloud:
+    loadbalancer:
+      ribbon:
+        enabled: false
+    gateway:
+      routes:
+        - id: consumer
+#          uri: http://localhost:18201/*
+          uri: lb://consumer
+          predicates:
+            - Path=/consumer/*
+          filters:
+            - name: Hystrix
+              args:
+                name: consumercmd
+                fallbackUri:
+                  forward: /consumerFallback
+
+server:
+  port: 18011
+
+sgd:
+  eureka:
+    auth:
+      u: admin
+      p: admin
+
+eureka:
+  instance:
+    hostname: gateway
+    # 实例名默认为 hostname:serviceName
+    instance-id: gateway18011
+    prefer-ip-address: true
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://${sgd.eureka.auth.u}:${sgd.eureka.auth.p}@eureka01:18001/eureka/,http://${sgd.eureka.auth.u}:${sgd.eureka.auth.p}@eureka02:18002/eureka/
+
+hystrix:
+  command:
+    # HystrixCommonKey。default表示全局设置
+    consumercmd:
+      fallback:
+        # 熔断时是否执行回调方法。默认true
+        enable: true
+      #        isolation:
+      #          semapore:
+      #            # 回调方法的信号池大小（允许回调方法执行的最大并发数）。默认10
+      #            maxConcurrentRequests: 10
+      requestCache:
+        # 开启请求缓存。默认true。缓存的生命周期为一个请求内
+        enabled: true
+      metrics:
+        rollingStats:
+          # 滚动统计的时间窗。默认10s
+          timeinMilliseconds: 10000
+      circuitBreaker:
+        # 是否能开启断路器。默认true
+        enable: true
+        # 请求总数阈值。默认20次。即，在滚动时间窗内，若请求不超过20次，即使请求失败也不会开启断路器
+        requestVolumeThreshold: 10
+        # 失败率阈值。默认50。即，当在滚动时间窗内超过了请求总数阈值，若失败数超过了请求总数的50%，则开启断路。
+        errorThresholdPercentage: 60
+        # 断路器被打开后的休眠时间。默认10s。休眠期过后，断路器进入半开启状态，即允许一个请求尝试访问，若成功则断路器关闭，若失败再时间重置
+        sleepWindowInMilliseconds: 10000
+      execution:
+        timeout:
+          # 是否开启超时熔断。默认true。若关闭，则只在服务不可用时熔断
+          enable: true
+        isolation:
+          # 隔离策略。thread表示线程池隔离（并发请求数受限于线程池大小），semaphore表示信号池隔离
+          thread:
+            # 使用降级的超时时间。默认1000ms
+            timeoutInMilliseconds: 3000
+            # 当请求超时时，是否中断正在执行的程序。默认true
+            interruptOnTimeout: true
+            # 当请求取消时，是否中断正在执行的程序。默认true
+            interruptOnCancel: true
+#          semapore:
+#            # 信号池大小（最大并发量）。默认10
+#            maxConcurrentRequests: 10
