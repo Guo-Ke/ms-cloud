@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: config-center
+  cloud:
+    loadbalancer:
+      ribbon:
+        enabled: false
+    config:
+      server:
+        git:
+          # 仓库地址
+          uri: git@github.com:Guo-Ke/springcloud-config.git
+          # 用户名（公开库可以不用填写）
+#          username: Guo-Ke
+          # 密码（公开库可以不用填写）
+#          password: 88zhengqi99
+          # 仓库中的路径
+          search-paths:
+            - springcloud-config/atguigu01
+      label: main
+
+server:
+  port: 18031
+
+sgd:
+  eureka:
+    auth:
+      u: admin
+      p: admin
+
+eureka:
+  instance:
+    hostname: config-center
+    # 实例名默认为 hostname:serviceName
+    instance-id: config-center18031
+    prefer-ip-address: true
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://${sgd.eureka.auth.u}:${sgd.eureka.auth.p}@eureka01:18001/eureka/
