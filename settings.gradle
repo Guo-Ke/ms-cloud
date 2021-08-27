@@ -16,7 +16,10 @@ include 'service:consumer01'
 findProject(':service:consumer01')?.name = 'consumer01'
 include 'service:provider01'
 findProject(':service:provider01')?.name = 'provider01'
-
+include 'service:provider-rabbitmq01'
+findProject(':service:provider-rabbitmq01')?.name = 'provider-rabbitmq01'
+include 'service:consumer-rabbitmq01'
+findProject(':service:consumer-rabbitmq01')?.name = 'consumer-rabbitmq01'
 
 if ( !JavaVersion.current().java8Compatible ) {
     throw new GradleException( "Gradle must be run with Java 8" )

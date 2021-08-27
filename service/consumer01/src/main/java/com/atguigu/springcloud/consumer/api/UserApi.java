@@ -33,4 +33,9 @@ public class UserApi {
 	public String getDivide(@RequestParam int divisor){
 		return userService.getDivide(divisor);
 	}
+
+	@GetMapping(value = "/getConfigInfo", consumes = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_FORM_URLENCODED_VALUE})
+	public String getConfigInfo(){
+		return userService.getConfigInfo();
+	}
 }

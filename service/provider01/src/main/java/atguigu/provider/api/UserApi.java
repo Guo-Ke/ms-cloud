@@ -19,19 +19,25 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserApi {
 	@Autowired
 	private UserService userService;
+
 	@HystrixCommand(commandKey = "UserApi#getName")
-	@GetMapping(value = "/getName", consumes = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_FORM_URLENCODED_VALUE})
+	@GetMapping(value = "/getName", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE})
 	public String getName(@RequestParam String consumerName) {
 		return userService.getName(consumerName);
 	}
 
-	@GetMapping(value = "/getTimeout", consumes = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_FORM_URLENCODED_VALUE})
-	public String getTimeout(){
+	@GetMapping(value = "/getTimeout", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE})
+	public String getTimeout() {
 		return userService.getTimeout();
 	}
 
-	@GetMapping(value = "/getDivide", consumes = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_FORM_URLENCODED_VALUE})
-	public String getDivide(@RequestParam int divisor){
+	@GetMapping(value = "/getDivide", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE})
+	public String getDivide(@RequestParam int divisor) {
 		return userService.getDivide(divisor);
+	}
+
+	@GetMapping(value = "/getConfigInfo", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE})
+	public String getConfigInfo() {
+		return userService.getConfigInfo();
 	}
 }

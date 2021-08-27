@@ -15,7 +15,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableFeignClients
 @EnableEurekaClient
 @SpringBootApplication
-//修改特定服务的负载均衡策略。若集成了feign，则不用编写配置类和只用该注解
+//修改特定服务的负载均衡策略。若集成了feign，则不用编写配置类和使用该注解
 //@RibbonClient(name = "provider", configuration = CustomRibbonConfig.class)
 public class Consumer01Application {
 	public static void main(String[] args) {

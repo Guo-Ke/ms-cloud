@@ -11,16 +11,21 @@ import org.springframework.stereotype.Component;
 public class UserFallback implements UserSao {
 	@Override
 	public String getName(String consumerName) {
-		return "user.getName服务繁忙，请稍后再试";
+		return "user.getName 服务繁忙，请稍后再试";
 	}
 
 	@Override
 	public String getTimeout() {
-		return "user.getTimeout服务繁忙，请稍后再试";
+		return "user.getTimeout 服务繁忙，请稍后再试";
 	}
 
 	@Override
 	public String getDivide(int divisor) {
-		return "user.getDivide服务繁忙，请稍后再试";
+		return "user.getDivide 服务繁忙，请稍后再试";
+	}
+
+	@Override
+	public String getConfigInfo() {
+		return "user.getConfigInfo 服务繁忙，请稍后再试";
 	}
 }

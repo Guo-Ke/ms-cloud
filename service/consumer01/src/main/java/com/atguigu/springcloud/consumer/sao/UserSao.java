@@ -12,12 +12,15 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @FeignClient(name = "provider", path = "/provider/user", fallback = UserFallback.class)
 public interface UserSao {
-	@GetMapping(value = "/getName", consumes = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_FORM_URLENCODED_VALUE})
+	@GetMapping(value = "/getName", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE})
 	String getName(@RequestParam String consumerName);
 
-	@GetMapping(value = "/getTimeout", consumes = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_FORM_URLENCODED_VALUE})
+	@GetMapping(value = "/getTimeout", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE})
 	String getTimeout();
 
-	@GetMapping(value = "/getDivide", consumes = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_FORM_URLENCODED_VALUE})
+	@GetMapping(value = "/getDivide", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE})
 	String getDivide(@RequestParam int divisor);
+
+	@GetMapping(value = "/getConfigInfo", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE})
+	String getConfigInfo();
 }

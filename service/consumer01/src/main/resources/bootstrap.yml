@@ -1,0 +1,65 @@
+spring:
+  application:
+    name: consumer
+  cloud:
+    loadbalancer:
+      ribbon:
+        enabled: false
+    config:
+      uri: http://config-center:18031
+      label: main
+      name: consumer01
+      profile: dev
+#  devtools:
+    ## 是否启用一些开发环境的默认属性。默认true
+#    add-properties: true
+#    restart:
+      # 是否开启触发重启开关
+#      enabled: true
+      # 触发重启的目录。默认为 classpath
+#      additional-paths: /classpath
+      # 在默认排除项（/META-INF/maven , /META-INF/resources , /resources , /static , /public , /templates）中新添加需要排除触发重启的目录。
+#      additional-exclude: /custom-path/**
+  rabbitmq:
+    host: localhost
+    port: 15672
+    username: admin
+    password: manager
+
+server:
+  servlet:
+    context-path: /consumer
+  port: 18201
+
+sgd:
+  eureka:
+    auth:
+      u: admin
+      p: admin
+
+eureka:
+  instance:
+    hostname: consumer01
+    # 实例名默认为 hostname:serviceName
+    instance-id: consumer18201
+    prefer-ip-address: true
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://${sgd.eureka.auth.u}:${sgd.eureka.auth.p}@eureka01:18001/eureka/
+
+feign:
+  client:
+    config:
+      default:
+        connect-timeout: 1000
+        read-timeout: 100000
+
+logging:
+  level:
+    com:
+      atguigu:
+        consumer:
+          sao:
+            UserSao: debug
