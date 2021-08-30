@@ -20,6 +20,7 @@ public class UserApi {
 	@Autowired
 	private UserService userService;
 
+	// 使该请求能被 actuator 监控到（默认只能监控 feignClient 的调用情况）
 	@HystrixCommand(commandKey = "UserApi#getName")
 	@GetMapping(value = "/getName", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE})
 	public String getName(@RequestParam String consumerName) {

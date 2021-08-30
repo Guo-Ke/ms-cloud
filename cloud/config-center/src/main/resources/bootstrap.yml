@@ -9,7 +9,7 @@ spring:
       server:
         git:
           # 仓库地址
-          uri: https://gitee.com/null_180_3625/springcloud-config.git
+          uri: https://gitee.com/guo8ke/springcloud-config.git
           # 用户名（公开库可以不用填写）
           #          username: Guo-Ke
           # 密码（公开库可以不用填写）

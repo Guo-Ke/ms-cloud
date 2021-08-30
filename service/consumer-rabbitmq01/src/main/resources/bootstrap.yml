@@ -1,0 +1,69 @@
+spring:
+  application:
+    name: consumer-rabbitmq
+  zipkin:
+    base-url: http://localhost:9411
+  sleuth:
+    sampler:
+      # 采样率。介于 0 和 1 之间，越高表示采样越详细
+      probability: 1
+  cloud:
+    loadbalancer:
+      ribbon:
+        enabled: false
+#    config:
+#      uri: http://config-center:18031
+#      name: consumer-rabbitmq01
+#      label: main
+#      profile: dev
+    stream:
+      binders:
+        # binder 名称
+        defaultRabbit:
+          # binder 需要适配的消息组件类型
+          type: rabbit
+          # 消息组件的环境
+          environment:
+            spring:
+              rabbitmq:
+                host: localhost
+                port: 15672
+                username: admin
+                password: manager
+      # 服务的整合处理
+      bindings:
+        # channel 名称。
+        input:
+          # exchange 名称
+          destination: studyExchange
+          # 分组
+          group: atguiguA
+          # 消息类型
+          content-type: application/json
+          # 需要使用的 binder 的名称
+          binder: defaultRabbit
+
+server:
+  port: 18211
+  servlet:
+    context-path: /consumer-rabbitmq
+
+eureka:
+  instance:
+    instance-id: consumer-rabbitmq18401
+    hostname: consumer-rabbitmq01
+    prefer-ip-address: true
+  client:
+    # 是否获取注册表
+#    fetch-registry: true
+    # 是否注册到 eureka
+#    register-with-eureka: true
+    service-url:
+      defaultZone: http://${sgd.eureka.auth.u}:${sgd.eureka.auth.p}@eureka01:18001/eureka/
+
+sgd:
+  eureka:
+    auth:
+      u: admin
+      p: admin
+
