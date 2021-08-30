@@ -21,8 +21,8 @@ findProject(':service:provider-rabbitmq01')?.name = 'provider-rabbitmq01'
 include 'service:consumer-rabbitmq01'
 findProject(':service:consumer-rabbitmq01')?.name = 'consumer-rabbitmq01'
 
-if ( !JavaVersion.current().java8Compatible ) {
-    throw new GradleException( "Gradle must be run with Java 8" )
+if ( !JavaVersion.current().java11Compatible ) {
+    throw new GradleException( "Gradle must be run with Java 11" )
 }
 /**
  * 递归检查build.gradle文件是否根据模块名生成
